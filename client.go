@@ -3,16 +3,14 @@ package pgocon
 import (
 	"fmt"
 
-	"github.com/matryer/resync"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
 var (
-	db   *gorm.DB
-	err  error
-	once resync.Once
+	db  *gorm.DB
+	err error
 )
 
 // Config struct to create new postgres connection client
@@ -43,50 +41,46 @@ type Config struct {
 }
 
 // Client singleton of Postgres connection client, use Postgres struct to call this method
-// library with github.com/jinzhu/gorm
+// library with gorm.io/gorm
 func (p Config) Client() (*gorm.DB, error) {
-	once.Do(func() {
-		dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d %s",
-			p.Username, p.Password, p.Database, p.Host, p.Port, p.Params)
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d %s",
+		p.Username, p.Password, p.Database, p.Host, p.Port, p.Params)
 
-		logMode := func() logger.LogLevel {
-			switch p.LogMode {
-			case 1:
-				return logger.Silent
-			case 2:
-				return logger.Error
-			case 3:
-				return logger.Warn
-			case 4:
-				return logger.Info
-			default:
-				return logger.Error
-			}
+	logMode := func() logger.LogLevel {
+		switch p.LogMode {
+		case 1:
+			return logger.Silent
+		case 2:
+			return logger.Error
+		case 3:
+			return logger.Warn
+		case 4:
+			return logger.Info
+		default:
+			return logger.Error
 		}
+	}
 
-		config := &gorm.Config{
-			Logger: logger.Default.LogMode(logMode()),
-		}
+	config := &gorm.Config{
+		Logger: logger.Default.LogMode(logMode()),
+	}
 
-		db, err = gorm.Open(postgres.Open(dsn), config)
-		if err != nil {
-			return
-		}
+	db, err = gorm.Open(postgres.Open(dsn), config)
+	if err != nil {
+		return nil, err
+	}
 
-		if p.DebugEnabled {
-			db = db.Debug()
-		}
+	if p.DebugEnabled {
+		db = db.Debug()
+	}
 
-		sqlDB, errPostgres := db.DB()
-		if errPostgres != nil {
-			return
-		}
+	sqlDB, errPostgres := db.DB()
+	if errPostgres != nil {
+		return nil, errPostgres
+	}
 
-		sqlDB.SetMaxIdleConns(p.MaxIdleConn)
-		sqlDB.SetMaxOpenConns(p.MaxOpenConn)
-
-		errPostgres = sqlDB.Ping()
-	})
+	sqlDB.SetMaxIdleConns(p.MaxIdleConn)
+	sqlDB.SetMaxOpenConns(p.MaxOpenConn)
 
 	if err := p.Ping(); err != nil {
 		return nil, err
@@ -112,11 +106,6 @@ func (p Config) Close() error {
 		return err
 	}
 	return conn.Close()
-}
-
-// Reset singleton postgres connection client
-func (p Config) Reset() {
-	once.Reset()
 }
 
 // SetDB with existing connection
