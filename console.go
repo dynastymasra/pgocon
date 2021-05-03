@@ -8,6 +8,8 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+
+	// import golang migrate source file
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"gorm.io/gorm"
 )
@@ -17,6 +19,7 @@ const (
 	migrationFilePath   = "./migration"
 )
 
+// CreateFile create a new migration file
 func CreateFile(filename string) error {
 	f, err := os.Create(filename)
 	if err != nil {
@@ -71,6 +74,7 @@ func Migration(data *gorm.DB) (*migrate.Migrate, error) {
 	return m, nil
 }
 
+// RunMigration run the database migration
 func RunMigration(migration *migrate.Migrate) error {
 	if err := migration.Up(); err != nil && err != migrate.ErrNoChange {
 		return err
@@ -78,6 +82,7 @@ func RunMigration(migration *migrate.Migrate) error {
 	return nil
 }
 
+// RollbackMigration rollback the database migration
 func RollbackMigration(migration *migrate.Migrate) error {
 	if err := migration.Steps(-1); err != nil {
 		return err
