@@ -74,19 +74,15 @@ func (p Config) Client() (*gorm.DB, error) {
 		db = db.Debug()
 	}
 
-	sqlDB, errPostgres := db.DB()
-	if errPostgres != nil {
-		return nil, errPostgres
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
 	}
 
 	sqlDB.SetMaxIdleConns(p.MaxIdleConn)
 	sqlDB.SetMaxOpenConns(p.MaxOpenConn)
 
-	if err := p.Ping(); err != nil {
-		return nil, err
-	}
-
-	return db, err
+	return db, nil
 }
 
 // Ping check database connection
