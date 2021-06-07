@@ -2,6 +2,7 @@ package pgocon
 
 import (
 	"fmt"
+	"strings"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -24,7 +25,7 @@ var (
 //	Params: the postgres database params, use space to separate value (sslmode=disable TimeZone=Asia/Jakarta)
 //	MaxIdleConn: sets the maximum number of connections in the idle connection pool.
 //	MaxOpenConn: sets the maximum number of open connections to the database.
-//	LogMode: sets log mode, 1(Silent) - 2(Error) - 3(Warn) - 4(Info), default is Error
+//	LogMode: sets log mode, (Silent) - (Error) - (Warn) - (Info), default is Silent
 //	DebugEnabled: sets true if enabled debug mode, will show query on console
 //}
 type Config struct {
@@ -36,7 +37,7 @@ type Config struct {
 	Params       string
 	MaxIdleConn  int
 	MaxOpenConn  int
-	LogMode      int
+	LogMode      string
 	DebugEnabled bool
 }
 
@@ -47,17 +48,17 @@ func (p Config) Client() (*gorm.DB, error) {
 		p.Username, p.Password, p.Database, p.Host, p.Port, p.Params)
 
 	logMode := func() logger.LogLevel {
-		switch p.LogMode {
-		case 1:
+		switch strings.ToLower(p.LogMode) {
+		case "silent":
 			return logger.Silent
-		case 2:
+		case "error":
 			return logger.Error
-		case 3:
+		case "warn":
 			return logger.Warn
-		case 4:
+		case "info":
 			return logger.Info
 		default:
-			return logger.Error
+			return logger.Silent
 		}
 	}
 
