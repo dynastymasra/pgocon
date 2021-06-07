@@ -25,7 +25,7 @@ var (
 //	Params: the postgres database params, use space to separate value (sslmode=disable TimeZone=Asia/Jakarta)
 //	MaxIdleConn: sets the maximum number of connections in the idle connection pool.
 //	MaxOpenConn: sets the maximum number of open connections to the database.
-//	LogMode: sets log mode, (Silent) - (Error) - (Warn) - (Info), default is Silent
+//	LogMode: sets log mode, (silent) - (error) - (warn) - (info), default is Silent
 //	DebugEnabled: sets true if enabled debug mode, will show query on console
 //}
 type Config struct {

@@ -23,7 +23,7 @@ config := pgocon.Config{
 	Params:       "sslmode=disable",
 	MaxIdleConn:  10,
 	MaxOpenConn:  10,
-	LogMode:      1,
+	LogMode:      "silent",
 	DebugEnabled: true,
 }
 		
