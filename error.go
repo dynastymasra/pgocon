@@ -45,6 +45,12 @@ func IsConnClosed(err error) bool {
 func IsConnTerminated(err error) bool {
 	if strings.Contains(err.Error(), "57P01") {
 		return true
+	} else if strings.Contains(err.Error(), "failed to connect") {
+		return true
+	} else if strings.Contains(err.Error(), "dial error") {
+		return true
+	} else if strings.Contains(err.Error(), "connection refused") {
+		return true
 	}
 	return false
 }
