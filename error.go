@@ -1,6 +1,8 @@
 package pgocon
 
 import (
+	"strings"
+
 	"github.com/jackc/pgconn"
 	"gorm.io/gorm"
 )
@@ -26,6 +28,22 @@ func IsInvalidInput(err error) bool {
 	if err, ok := err.(*pgconn.PgError); ok && err.Code == "22P02" {
 		return true
 	} else if ok && err.Code == "23502" {
+		return true
+	}
+	return false
+}
+
+// IsConnClosed check error from sql if the connection was closed
+func IsConnClosed(err error) bool {
+	if strings.Contains(err.Error(), "database is closed") {
+		return true
+	}
+	return false
+}
+
+// IsConnTerminated check error from sql if the connection was terminated
+func IsConnTerminated(err error) bool {
+	if strings.Contains(err.Error(), "57P01") {
 		return true
 	}
 	return false
