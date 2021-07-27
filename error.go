@@ -35,6 +35,10 @@ func IsInvalidInput(err error) bool {
 
 // IsConnClosed check error from sql if the connection was closed
 func IsConnClosed(err error) bool {
+	if err == nil {
+		return false
+	}
+
 	if strings.Contains(err.Error(), "database is closed") {
 		return true
 	}
@@ -43,6 +47,10 @@ func IsConnClosed(err error) bool {
 
 // IsConnTerminated check error from sql if the connection was terminated
 func IsConnTerminated(err error) bool {
+	if err == nil {
+		return false
+	}
+
 	if strings.Contains(err.Error(), "57P01") {
 		return true
 	} else if strings.Contains(err.Error(), "failed to connect") {
